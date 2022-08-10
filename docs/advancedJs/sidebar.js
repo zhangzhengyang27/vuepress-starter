@@ -97,10 +97,10 @@ module.exports = [
             '/advancedJs/notes/13-事件',
         ]
     }, {
-        title: '表单提交',
+        title: '表单脚本',
         collapsable: true,
         children: [
-            '/advancedJs/notes/14-表单提交',
+            '/advancedJs/notes/14-表单脚本',
         ]
     }, {
         title: '使用Canvas绘图',

@@ -3,7 +3,7 @@ module.exports = [
         text: '前端',
         items: [
             {text: 'Javascript高级', link: '/advancedJs/'},
-            {text: 'vue2官方文档', link: '/vue2/'}
+            // {text: 'vue2官方文档', link: '/vue2/'}
         ]
     },
     // {

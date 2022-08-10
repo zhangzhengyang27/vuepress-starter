@@ -3,6 +3,7 @@ const moment = require('moment');
 
 module.exports = {
     lang: 'zh-CN',
+    base:"/vuepress/",
     title: '开发者，你好！',
     description: '这是我的第一个 VuePress 站点',
     // 在移动端，搜索框在获得焦点时会放大，并且在失去焦点后可以左右滚动，这可以通过设置元来优化。
@@ -108,58 +109,36 @@ module.exports = {
         }
     },
 
-    plugins: [
-        ['@vuepress/last-updated'],
-        ['@vuepress/medium-zoom'],
-        ['@vuepress-reco/vuepress-plugin-bulletin-popover', {
-            width: '300px', // 默认 260px
-            title: '消息提示',
-            body: [
-                {
-                    type: 'title',
-                    content: '添加冴羽好友入前端交流群',
-                    style: 'text-aligin: center;'
-                },
-                {
-                    type: 'image',
-                    src: 'https://cdn.jsdelivr.net/gh/mqyqingfeng/picture/IMG_3516.JPG'
-                }
-            ],
-            footer: [
-                {
-                    type: 'button',
-                    text: '打赏',
-                    link: '/donate'
-                }
-            ]
-        }], ["vuepress-plugin-nuggets-style-copy", {
-            copyText: "复制代码",
-            tip: {
-                content: "复制成功"
-            }
-        }], [
-            '@vuepress-reco/vuepress-plugin-bgm-player',
-            {
-                audios: [
-                    {
-                        name: 'LOSER',
-                        artist: '米津玄師',
-                        url: 'https://www.ytmp3.cn/down/73654.mp3',
-                        cover: 'https://p1.music.126.net/qTSIZ27qiFvRoKj-P30BiA==/109951165895951287.jpg?param=200y200'
-                    }
-                ],
-                // 是否默认缩小
-                autoShrink: true,
-                // 缩小时缩为哪种模式
-                shrinkMode: 'float',
-                // 悬浮窗样式
-                floatStyle: {bottom: '10px',right: '10px', 'z-index': '999999'},
-                floatPosition:'right',
-                autoplay:false,
-                position:{bottom: '10px',right: '10px', 'z-index': '999999'},
-            }
-        ]
-    ]
+    // plugins: [
+    //     ['@vuepress-reco/vuepress-plugin-bulletin-popover', {
+    //         width: '300px', // 默认 260px
+    //         title: '消息提示',
+    //         body: [
+    //             {
+    //                 type: 'title',
+    //                 content: '添加冴羽好友入前端交流群',
+    //                 style: 'text-aligin: center;'
+    //             },
+    //             {
+    //                 type: 'image',
+    //                 src: 'https://cdn.jsdelivr.net/gh/mqyqingfeng/picture/IMG_3516.JPG'
+    //             }
+    //         ],
+    //         footer: [
+    //             {
+    //                 type: 'button',
+    //                 text: '打赏',
+    //                 link: '/donate'
+    //             }
+    //         ]
+    //     }]
+    //     , ["vuepress-plugin-nuggets-style-copy", {
+    //         copyText: "复制代码",
+    //         tip: {
+    //             content: "复制成功"
+    //         }
+    //     }]
+    // ]
 
     // 使用 markdown-it 插件扩展语法
     // markdown: {
