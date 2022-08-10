@@ -1,9 +1,6 @@
-const moment = require('moment');
-
-
 module.exports = {
     lang: 'zh-CN',
-    base:"/vuepress/",
+    base: "/vuepress/",
     title: '开发者，你好！',
     description: '这是我的第一个 VuePress 站点',
     // 在移动端，搜索框在获得焦点时会放大，并且在失去焦点后可以左右滚动，这可以通过设置元来优化。
@@ -26,23 +23,17 @@ module.exports = {
         sidebar: require("./sidebar"),
         // 子侧边栏是否打开,在所有页面中启用自动生成子侧边栏，原 sidebar 仍然兼容
         subSidebar: 'auto',
-        sidebarDepth: 3,
-        lastUpdated: 'Last Updated',
+        sidebarDepth: 5,
+        lastUpdated: '最后更新时间',
         search: true,
         searchMaxSuggestoins: 10,
-        serviceWorker: {
-            updatePopup: {
-                message: "有新的内容.",
-                buttonText: '更新'
-            }
-        },
         editLinks: true,
         editLinkText: '在 GitHub 上编辑此页 ！',
         // 博客配置   写文章时要添加分类和标签
         blogConfig: {
-            nav: [
-                {text: 'TimeLine', link: '/timeline/', icon: 'reco-date'}
-            ],
+            // nav: [
+            //     {text: 'TimeLine', link: '/timeline/', icon: 'reco-date'}
+            // ],
             category: {
                 location: 2,     // 在导航栏菜单中所占的位置，默认2
                 text: 'Category' // 默认文案 “分类”
@@ -64,7 +55,7 @@ module.exports = {
         // 项目开始时间，只填写年份
         startYear: '2022',
         author: 'zhengzhengyang',
-        huawei:false,
+        huawei: true,
         friendLink: [
             {
                 title: 'vuepress-theme-reco',
@@ -101,54 +92,11 @@ module.exports = {
                 }
             }
         },
-        lastUpdated: '最后更新时间'
+
     },
     locales: {
         '/': {
             lang: 'zh-CN'
         }
     },
-
-    // plugins: [
-    //     ['@vuepress-reco/vuepress-plugin-bulletin-popover', {
-    //         width: '300px', // 默认 260px
-    //         title: '消息提示',
-    //         body: [
-    //             {
-    //                 type: 'title',
-    //                 content: '添加冴羽好友入前端交流群',
-    //                 style: 'text-aligin: center;'
-    //             },
-    //             {
-    //                 type: 'image',
-    //                 src: 'https://cdn.jsdelivr.net/gh/mqyqingfeng/picture/IMG_3516.JPG'
-    //             }
-    //         ],
-    //         footer: [
-    //             {
-    //                 type: 'button',
-    //                 text: '打赏',
-    //                 link: '/donate'
-    //             }
-    //         ]
-    //     }]
-    //     , ["vuepress-plugin-nuggets-style-copy", {
-    //         copyText: "复制代码",
-    //         tip: {
-    //             content: "复制成功"
-    //         }
-    //     }]
-    // ]
-
-    // 使用 markdown-it 插件扩展语法
-    // markdown: {
-    //     // markdown-it-anchor 的选项
-    //     anchor: { permalink: false },
-    //     // markdown-it-toc 的选项
-    //     toc: { includeLevel: [1, 2] },
-    //     extendMarkdown: md => {
-    //         // 使用更多的 markdown-it 插件!
-    //         md.use(require('markdown-it-xxx'))
-    //     }
-    // }
 }
