@@ -3,7 +3,10 @@ module.exports = [
         text: '前端',
         items: [
             {text: 'Javascript高级', link: '/advancedJs/'},
-            // {text: 'vue2官方文档', link: '/vue2/'}
+            {text: '慕课100', link: '/muke100/'},
+            {text: 'vueRouter文档', link: '/vueRouter/'},
+            {text: '技巧文档', link: '/skill/'},
+            {text: '拉勾前端', link: '/lagouWeb/'}
         ]
     },
     // {

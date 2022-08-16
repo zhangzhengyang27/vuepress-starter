@@ -1,0 +1,994 @@
+学习成为一个更好的Vue开发者并不总是关于那些需要花时间和精力才能掌握的大概念。掌握一些技巧和窍门，可以让我们的编程生活变得更容易--没有大量重复的工作
+
+## 1. 将一个 prop 限制在一个类型的列表中
+
+使用 prop 定义中的 `validator` 选项，可以将一个 prop 类型限制在一组特定的值中。
+
+```
+export default {
+  name: 'Image',
+  props: {
+    src: {
+      type: String,
+    },
+    style: {
+      type: String,
+      validator: s => ['square', 'rounded'].includes(s)
+    }
+  }
+};
+```
+
+这个验证函数接受一个prop，如果prop有效或无效，则返回`true`或`false`。
+
+当单单传入的 true 或 false 来控制某些条件不能满足需求时，我通常使用这个方法来做。
+
+按钮类型或警告类型(信息、成功、危险、警告)是最常见的用法。颜色也是一个很好的用途。
+
+## 2. 默认内容和扩展点
+
+Vue中的槽可以有默认的内容，这使我们可以制作出更容易使用的组件。
+
+```html
+<button class="button" @click="$emit('click')">
+  <slot>
+    <!-- Used if no slot is provided -->
+    Click me
+  </slot>
+</button>
+```
+
+使用默认槽，就是用它们来创建扩展点。
+
+我们可以取组件的任何部分，将其封装在一个插槽中，在外面我们可以用想要的任何内容覆盖组件的该部分。默认情况下，它仍然会按照原来的方式工作，但这样做会有了更多的选项
+
+```vue
+<template>
+  <button class="button" @click="$emit('click')">
+    <slot>
+      <div class="formatting">
+        {{ text }}
+      </div>
+    </slot>
+  </button>
+</template>
+```
+
+现在我们可以用许多不同的方式使用这个组件。简单的、默认的方式，或者自定义的方式。
+
+```vue
+<!-- Uses default functionality of the component -->
+<ButtonWithExtensionPoint text="Formatted text" />
+
+<ButtonWithExtensionPoint>
+  <div class="different-formatting">
+    Do something a little different here
+  </div>
+</ButtonWithExtensionPoint>
+```
+
+## 3. 使用引号来监听嵌套属性
+
+你可能不知道这一点，我们可以通过使用引号轻松地直接监听嵌套值：
+
+```js
+watch {
+  '$route.query.id'() {
+    // ...
+  }
+}
+```
+
+## 4. 知道何时使用`v-if`（以及何时避免使用）
+
+与其使用`v-if`，有时使用`v-show`来代替，会有更高的性能。
+
+```vue
+<ComplicatedChart v-show="chartEnabled" />
+```
+
+当`v-if`被打开或关闭时，它将创建并完全销毁该元素。相反，`v-show`将创建该元素并将其留在那里，通过设置其样式为`display: none`来隐藏它。
+
+如果你要切换的组件的渲染成本很高，那么这样做会更有效率。
+
+反过来说，如果不需要立即执行昂贵的组件，可以使用`v-if`，这样它就会跳过渲染它，而使页面的加载速度更快一些。
+
+## 5. 单个作用域插槽的简写(不需要 template 标签)
+
+限定范围的插槽非常有趣，但为了使用它们，您还必须使用许多模板标记。
+
+幸运的是，有一个简写可以让我们摆脱它，但只有在我们使用单个作用域槽的情况下。
+
+普通写法：
+
+```vue
+<DataTable>
+  <template #header="tableAttributes">
+    <TableHeader v-bind="tableAttributes" />
+  </template>
+</DataTable>
+```
+
+不使用 `template`:
+
+```vue
+<DataTable #header="tableAttributes">
+  <TableHeader v-bind="tableAttributes" />
+</DataTable>
+```
+
+简单、直截了当，令人赞叹不已。
+
+## 6. 有条件地渲染插槽
+
+我们先来看如何做，然后在讨论为什么想隐藏插槽。
+
+每个Vue组件都有一个特殊的`$slots`对象，里面有你所有的插槽。默认槽的键是`default`，任何被命名的槽都使用其名称作为键。
+
+```vue
+const $slots = {
+  default: <default slot>,
+  icon: <icon slot>,
+  button: <button slot>,
+};
+```
+
+但这个`$slots`对象只有适用于该组件的插槽，而不是每一个定义的插槽。
+
+拿这个定义了几个插槽的组件来说，包括几个命名的插槽。
+
+```vue
+<!-- Slots.vue -->
+<template>
+  <div>
+    <h2>Here are some slots</h2>
+    <slot />
+    <slot name="second" />
+    <slot name="third" />
+  </div>
+</template>
+```
+
+如果我们只对组件应用一个插槽，那么只有那个插槽会显示在我们的`$slots`对象中。
+
+```vue
+<template>
+  <Slots>
+    <template #second>
+      This will be applied to the second slot.
+    </template>
+  </Slots>
+</template>
+```
+
+```js
+$slots = { second: <vnode> }
+```
+
+我们可以在我们的组件中使用这一点来检测哪些插槽已经被应用到组件中，例如，通过隐藏插槽的包装元素。
+
+```vue
+<template>
+  <div>
+    <h2>A wrapped slot</h2>
+    <div v-if="$slots.default" class="styles">
+      <slot />
+    </div>
+  </div>
+</template>
+```
+
+现在，应用样式的包装器`div`只有在我们用某些东西填充这个插槽时才会被渲染。
+
+如果不使用`v-if`，那么如果没有插槽，就会得到一个空的不必要的`div`。根据`div`的样式，这可能会打乱我们的布局，让界面看起来很奇怪
+
+### 那么，为什么我们希望能够有条件地渲染插槽呢？
+
+使用条件插槽的主要原因有三个:
+
+- 当使用封装的`div`来添加默认样式时
+- 插槽是空的
+- 如果我们将默认内容与嵌套槽相结合
+
+例如，当我们在添加默认样式时，我们在插槽周围添加一个`div`:
+
+```vue
+<template>
+  <div>
+    <h2>This is a pretty great component, amirite?</h2>
+    <div class="default-styling">
+      <slot >
+    </div>
+    <button @click="$emit('click')">Click me!</button>
+  </div>
+</template>
+```
+
+然而，如果父组件没有将内容应用到该插槽中，我们最终会在页面上渲染出一个空的`div`。
+
+```vue
+<div>
+  <h2>This is a pretty great component, amirite?</h2>
+  <div class="default-styling">
+    <!-- 槽中没有内容，但这个div 仍然被渲染。糟糕 -->
+  </div>
+  <button @click="$emit('click')">Click me!</button>
+</div>
+```
+
+解决方法就是像上面讲的一样，多个条件判断，就行啦。
+
+## 7. 如何监听一个插槽的变化
+
+有时我们需要知道插槽内的内容何时发生了变化。
+
+```js
+<!-- 可惜这个事件不存在 -->
+<slot @change="update" />
+```
+
+不幸的是，Vue没有内置的方法让我们检测这一点。
+
+然而，我的朋友Austin想出了一个非常干净的方法，使用MutationObserver来做这件事。
+
+> MutationObserver接口提供了监视对DOM树所做更改的能力。它被设计为旧的Mutation Events功能的替代品，该功能是DOM3 Events规范的一部分。
+
+```js
+export default {
+  mounted() {
+    // 当有变化时调用`update`
+    const observer = new MutationObserver(this.update);
+
+    // 监听此组件的变化
+    observer.observe(this.$el, {
+      childList: true,
+      subtree: true
+    });
+  }
+};
+```
+
+这个涉及的内容还是很多的，后面会单独出一篇文章来讲
+
+## 8. 将局部和全局的 `style`混合在一起
+
+通常情况下，在处理样式时，我们希望它们能被划分到一个单独的组件中。
+
+```css
+<style scoped>
+  .component {
+    background: green;
+  }
+</style>
+```
+
+不过，如果需要的话，也可以添加一个非作用域样式块来添加全局样式
+
+```css
+<style>
+  /* 全局 */
+  .component p {
+    margin-bottom: 16px;
+  }
+</style>
+
+<style scoped>
+  /* 在该组件内有效 */
+  .component {
+    background: green;
+  }
+</style>
+```
+
+但要小心，全局样式是危险的，难以追踪。但有时，它们是一个完美的逃生舱口，正是你所需要的。
+
+## 9. 重写子组件的样式--正确的方法
+
+Scoped CSS在保持内容整洁方面非常棒，而且不会将样式引入应用的其他组件中。
+
+但有时你需要覆盖一个子组件的样式，并跳出这个作用域。
+
+Vue有一个 `deep` 选择器：
+
+```js
+<style scoped>
+.my-component >>> .child-component {
+  font-size: 24px;
+}
+</style>
+```
+
+注意：如果你使用像SCSS这样的CSS预处理器，你可能需要使用`/deep/`来代替。
+
+## 10. 用上下文感知组件创造魔法
+
+**上下文感知组件(context-aware)**是“魔法的”，它们自动适应周围发生的事情，处理边缘情况、状态共享等等。
+
+有3种主要的 `context-aware` ，但 `Configuration` 是我最感兴趣的一种。
+
+### 1.状态共享
+
+当你把一个大的组件分解成多个小的组件时，它们往往仍然需要共享状态。
+
+我们可以在 "幕后 "做这些工作，而不是把这些工作推给使用者。
+
+我们一般会把 `Dropdown` 组件分解成 `Select` 和 `Option` 组件，这样会获得更多的灵活性。但是为了方便使用，`Select` 和`Option`组件彼此共享 `selected` 状态。
+
+```vue
+<!-- 为简单起见，作为一个单一组件使用 -->
+<Dropdown v-model="selected" :options="[]" />
+
+<!-- 分多个组件，更灵活 -->
+<Select v-model="selected">
+  <Option value="mustard">Mustard</Option>
+  <Option value="ketchup">Ketchup</Option>
+  <div class="relish-wrapper">
+    <Option value="relish">Relish</Option>
+  </div>
+</Select>
+```
+
+### 2. Configuration
+
+有时，一个组件的行为需要根据应用程序的其他部分的情况来改变。这通常是为了自动处理边缘情况，否则处理起来会很烦人。
+
+一个 `Popup` 或 `Tooltip` 应该重新定位，以便它不会溢出页面。但是，如果该组件是在一个modal 内，它应该重新定位，以便它不会溢出 modal。
+
+如果`Tooltip`知道它是在一个模态里面，这可以自动完成。
+
+### 3.样式
+
+创建了 `context-aware`的CSS，根据父级或同级元素的情况应用不同的样式。
+
+```css
+.statistic {
+  color: black;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.statistic + .statistic {
+  margin-left: 10px;
+}
+```
+
+CSS变量让我们更进一步，允许我们在一个页面的不同部分设置不同的值。
+
+### 11. 如何在Vue之外创建一个具有响应性的变量(Vue2和3)
+
+如果你从Vue之外得到一个变量，让它具有反应性是很好的。
+
+这样，我们就可以在`computed props`、`watch`和其他任何地方使用它，它的工作方式就像Vue中的任何其他状态一样。
+
+如果我们使用的选项API，需要的只是将其放在组件的数据部分中：
+
+```js
+const externalVariable = getValue();
+
+export default {
+  data() {
+    return {
+      reactiveVariable: externalVariable,
+    };
+  }
+};
+```
+
+如果使用Vue3的组合API，可以直接使用`ref`或`reactive`。
+
+```js
+import { ref } from 'vue';
+
+// 可以完全在Vue组件之外完成
+const externalVariable = getValue();
+const reactiveVariable = ref(externalVariable);
+
+console.log(reactiveVariable.value);
+```
+
+使用 `reactive` 代替：
+
+```js
+import { reactive } from 'vue';
+
+//  可以完全在Vue组件之外完成
+const externalVariable = getValue();
+
+// reactive 只对对象和数组起作用
+const anotherReactiveVariable = reactive(externalVariable);
+
+// Access directly
+console.log(anotherReactiveVariable);
+```
+
+如果你还在使用 Vue2，你可以使用`observable`而不是`reactive`来实现完全相同的结果
+
+### 12. v-for 中的解构
+
+你知道可以在`v-for`中使用解构吗？
+
+```html
+<li v-for="{ name, id } in users" :key="id">
+  {{ name }}
+</li>
+```
+
+更广为人知的是，可以通过使用这样的元组从`v-for`中取出索引。
+
+```html
+<li v-for="(movie, index) in [
+  'Lion King',
+  'Frozen',
+  'The Princess Bride'
+]">
+  {{ index + 1 }} - {{ movie }}
+</li>
+```
+
+当使用一个对象时，可以这样使用 `key`：
+
+```html
+<li v-for="(value, key) in {
+  name: 'Lion King',
+  released: 2019,
+  director: 'Jon Favreau',
+}">
+  {{ key }}: {{ value }}
+</li>
+```
+
+也可以将这两种方法结合起来，获取`key`以及属性的 `index`。
+
+```html
+<li v-for="(value, key, index) in {
+  name: 'Lion King',
+  released: 2019,
+  director: 'Jon Favreau',
+}">
+  {{ index + 1 }}. {{ key }}: {{ value }}
+</li>
+```
+
+## 13. 在指定范围内循环
+
+`v-for`指令允许我们遍历数组，但它也允许我们遍历一个范围
+
+```vue
+<template>
+  <ul>
+    <li v-for="n in 5">Item #{{ n }}</li>
+  </ul>
+</template>
+```
+
+渲染结果：
+
+```js
+Item #1
+Item #2
+Item #3
+Item #4
+Item #5
+```
+
+当我们使用带范围的`v-for`时，它将从`1`开始，以我们指定的数字结束。
+
+## 14. 监听你的组件中的任何东西
+
+```js
+export default {
+  computed: {
+    someComputedProperty() {
+      // Update the computed prop
+    },
+  },
+  watch: {
+    someComputedProperty() {
+      // Do something when the computed prop is updated
+    }
+  }
+};
+```
+
+我们可以监听：
+
+- 计算属性
+- props
+- 嵌套值
+
+如果你使用组合API，任何值都可以被监视，只要它是一个`ref`或`reactive`对象。
+
+### 15.窃取 prop 类型
+
+从一个子组件中复制 prop 类型，只是为了在一个父组件中使用它们。但我发现，偷取这些 prop 类型要比仅仅复制它们好得多。
+
+例如，我们在这个组件中使用了一个`Icon`组件。
+
+```vue
+<template>
+  <div>
+    <h2>{{ heading }}</h2>
+    <Icon
+      :type="iconType"
+      :size="iconSize"
+      :colour="iconColour"
+    />
+  </div>
+</template>
+```
+
+为了让它工作，我们需要添加正确的 prop 类型，从``Icon`组件复制。
+
+```js
+import Icon from './Icon';
+export default {
+  components: { Icon },
+  props: {
+    iconType: {
+      type: String,
+      required: true,
+    },
+    iconSize: {
+      type: String,
+      default: 'medium',
+      validator: size => [
+        'small',
+        'medium',
+        'large',
+        'x-large'
+      ].includes(size),
+    },
+    iconColour: {
+      type: String,
+      default: 'black',
+    },
+    heading: {
+      type: String,
+      required: true,
+    },
+  },
+};
+```
+
+当 `Icon` 组件的 `prop`类型被更新时，我们肯定会忘记返回这个组件并更新它们。随着时间的推移，当该组件的 `prop`类型开始偏离`Icon`组件中的 prop 类型时，就会引入错误。
+
+因此，这就是为什么我们要窃取组件的 `prop` 类型：
+
+```js
+import Icon from './Icon';
+export default {
+  components: { Icon },
+  props: {
+    ...Icon.props,
+    heading: {
+      type: String,
+      required: true,
+    },
+  },
+};
+```
+
+不需要再复杂了。
+
+除了在我们的例子中，我们把 `icon` 加在每个 `prop` 名称的开头。所以我们必须做一些额外的工作来实现这一点。
+
+```js
+import Icon from './Icon';
+
+const iconProps = {};
+
+Object.entries(Icon.props).forEach((key, val) => {
+  iconProps[`icon${key.toUpperCase()}`] = val;
+});
+
+export default {
+  components: { Icon },
+  props: {
+    ...iconProps,
+    heading: {
+      type: String,
+      required: true,
+    },
+  },
+};
+```
+
+现在，如果`Icon`组件中的 `prop` 类型被修改，我们的组件将保持最新状态。
+
+但是，如果一个 `prop` 类型从 `Icon` 组件中被添加或删除了呢？为了应对这些情况，我们可以使用`v-bind`和一个计算的 `prop` 来保持动态。
+
+## 16. 检测元素外部(或内部)的单击
+
+有时我需要检测一个点击是发生在一个特定元素`el`的内部还是外部。这就是我通常使用的方法。
+
+```js
+window.addEventListener('mousedown', e => {
+  // 获取被点击的元素
+  const clickedEl = e.target;
+  
+  if (el.contains(clickedEl)) {
+   //在 "el "里面点击了
+  } else {
+   //在 "el "外点击了
+  }
+});
+```
+
+## 17. 递归插槽
+
+有一次，我决定看看我是否可以只用模板来做一个`v-for`组件。在这个过程中，我也发现了如何递归地使用槽。
+
+```vue
+<!-- VFor.vue -->
+<template>
+    <div>
+    <!--  渲染第一项 -->
+    {{ list[0] }}
+    <!-- 如果我们有更多的项目，继续!但是不要使用我们刚刚渲染的项 -->
+    <v-for v-if="list.length > 1" :list="list.slice(1)"/>
+    </div>
+</template>
+```
+
+如果你想用作用域插槽来做这件事，只是需要一些调整
+
+```js
+<template>
+  <div>
+    <!-- Pass the item into the slot to be rendered -->
+    <slot v-bind:item="list[0]">
+      <!-- Default -->
+      {{ list[0] }}
+    </slot>
+
+    <v-for v-if="list.length > 1" :list="list.slice(1)">
+      <!-- Recursively pass down scoped slot -->
+      <template v-slot="{ item }">
+        <slot v-bind:item="item" />
+      </template>
+    </v-for>
+  </div>
+</template>
+```
+
+下面是这个组件的使用方法。
+
+```vue
+<template>
+  <div>
+    <!-- 常规列表 -->
+    <v-for :list="list" />
+
+    <!-- 加粗的项目列表 -->
+    <v-for :list="list">
+      <template v-slot="{ item }">
+        <strong>{{ item }}</strong>
+      </template>
+    </v-for>
+  </div>
+</template>
+```
+
+## 18. 组件元数据
+
+并不是添加到一个组件的每一点信息都是状态。有时我们需要添加一些元数据，给其他组件提供更多信息。
+
+例如，如果正在为谷歌 analytics这样的分析仪表：
+
+<img src="https://interview-aliyun.oss-cn-beijing.aliyuncs.com/myBlog/image-20220606171902653.png" alt="image-20220606171902653" style="zoom:30%;" />
+
+如果你想让布局知道每个小组件应该占多少列，你可以直接在组件上添加元数据。
+
+```js
+export default {
+  name: 'LiveUsersWidget',
+  // 只需将其作为一个额外的属性添加
+  columns: 3,
+  props: {
+    // ...
+  },
+  data() {
+    return {
+      //...
+    };
+  },
+};
+```
+
+你会发现这个元数据是组件上的一个属性。
+
+```js
+import LiveUsersWidget from './LiveUsersWidget.vue';
+const { columns } = LiveUsersWidget;
+```
+
+我们也可以通过特殊的`$options`属性从组件内部访问元数据。
+
+```js
+export default {
+  name: 'LiveUsersWidget',
+  columns: 3,
+  created() {
+    // 👇 `$options` contains all the metadata for a component
+    console.log(`Using ${this.$options.metadata} columns`);
+  },
+};
+```
+
+只要记住，这个元数据对组件的每个实例都是一样的，而且不是响应式的。
+
+这方面的其他用途包括（但不限于）：
+
+- 保持单个组件的版本号
+- 用于构建工具的自定义标志，以区别对待组件
+- 在计算属性、数据、watch 等之外为组件添加自定义功能
+- 其它
+
+## 19. 多文件单文件组件
+
+这是**SFC(单文件组件)**的一点已知功能。
+
+可以像常规HTML文件一样导入文件：
+
+```js
+<template src="./template.html"></template>
+<script src="./script.js"></script>
+<style scoped src="./styles.css"></style>
+```
+
+如果你需要分享样式、文件或其他任何东西，这可能会非常方便。
+
+## 20. 可重复使用的组件并不是你所想的那样
+
+可重复使用的组件不一定是大的或复杂的东西。让小的和短的组件可以重复使用。
+
+因为我没有到处重写这段代码，所以更新它变得更加容易，而且我可以确保每个`OverflowMenu`的外观和工作方式都完全一样--因为它们是一样的！"。
+
+```vue
+<!-- OverflowMenu.vue -->
+<template>
+  <Menu>
+    <!-- 添加一个自定义按钮来触发我们的菜单   -->
+    <template #button v-slot="bind">
+      <!-- 使用bind来传递click处理程序、a11y 属性等 -->
+      <Button v-bind="bind">
+        <template #icon>
+          <svg src="./ellipsis.svg" />
+        </template>
+      </Button>
+    </template>
+  </Menu>
+</template>
+```
+
+在这里，我们采用了一个菜单组件，但在触发它的按钮上添加了一个 `ellipsis 图标`。(省略号)的图标来触发它的打开。
+
+这似乎不值得把它做成一个可重复使用的组件，因为它只有几行。难道我们就不能在每次要使用这样的菜单时添加图标吗？
+
+但是这个OverflowMenu将被使用几十次，现在如果我们想更新图标或它的行为，我们可以非常容易地做到。而且，使用它也更简单了。
+
+## 21. 从组件外部调用一个方法
+
+我们可以从一个组件的外部通过给它一个 `ref` 用来调用一个方法。
+
+```vue
+<!-- Parent.vue -->
+<template>
+  <ChildComponent ref="child" />
+</template>
+```
+
+```js
+// Somewhere in Parent.vue
+this.$refs.child.method();
+```
+
+再解释一下这个问题。
+
+有时候，“最佳实践”并不适用于你正在做的事情，你需要一个像这样的逃生口。
+
+通常情况下，我们使用 props  和 events 在组件之间进行交流。props 被下发到子组件中，而events 被上发到父组件中。
+
+```vue
+<template>
+  <ChildComponent
+    :tell-me-what-to-do="someInstructions"
+    @something-happened="hereIWillHelpYouWithThat"
+  />
+</template>
+```
+
+```js
+// Child.vue
+export default {
+  props: ['trigger'],
+  watch: {
+    shouldCallMethod(newVal) {
+      if (newVal) {
+        // Call the method when the trigger is set to `true`
+        this.method();
+      }
+    }
+  }
+}
+```
+
+这可以正常工作，但只能在第一次调用时使用。如果您需要多次触发此操作，则必须进行清理并重置状态。逻辑是这样的
+
+- 父组件将 `true` 传递给触发器 `prop`
+- Watch 被触发，然后 Child 组件调用该方法
+- 子组件发出一个事件，告诉父组件该方法已被成功触发
+- Parent组件将 `trigger` 重置为 `false`，所以我们可以从头再来一次
+
+相反，如果我们在子组件上设置一个 `ref`，我们可以直接调用该方法:
+
+```js
+<!-- Parent.vue -->
+<template>
+  <ChildComponent ref="child" />
+</template>
+
+// Somewhere in Parent.vue
+this.$refs.child.method();
+```
+
+是的，我们打破了 “props down, events up"” 的规则，我们打破了封装，但是这样做更清晰，更容易理解，所以是值得的
+
+有时，"最好的 "解决方案最终会成为最糟糕的解决方案。
+
+## 22. 监听数组和对象
+
+使用 `watcher` 最棘手的部分是，有时它似乎不能正确触发。
+
+通常，这是因为我们试图监听数组或对象，但没有将`deep`设置为`true`
+
+```js
+export default {
+  name: 'ColourChange',
+  props: {
+    colours: {
+      type: Array,
+      required: true,
+    },
+  },
+  watch: {
+    // 使用对象语法，而不仅仅是方法
+    colours: {
+      // 这将让Vue知道要在数组内部寻找
+      deep: true,
+
+      handler()
+        console.log('The list of colours has changed!');
+      }
+    }
+  }
+}
+```
+
+使用Vue 3的API会是这样的:
+
+```js
+watch(
+  colours,
+  () => {
+    console.log('The list of colours has changed!');
+  },
+  {
+    deep: true,
+  }
+);
+```
+
+### 23. 用Vue Router进行深度链接
+
+我们可以在URL中存储（一点）状态，允许我们直接跳到页面上的一个特定状态。
+
+例如，你加载一个已经选择了日期范围过滤器的页面：
+
+```js
+someurl.com/edit?date-range=last-week
+```
+
+这对于应用中用户可能共享大量链接的部分来说是非常棒的，对于服务器渲染的应用，或者在两个独立的应用之间通信的信息比普通链接通常提供的更多。
+
+我们可以存储过滤器、搜索值、模态框是打开还是关闭，或者在列表的哪个位置滚动以完美地实现无限分页。
+
+使用 `vue-router` 获取查询参数是这样工作的(这也适用于大多数Vue框架，如Nuxt和Vuepress)：
+
+```js
+const dateRange = this.$route.query.dateRange;
+```
+
+为了改变它，我们使用 `RouterLink` 组件并更新 `query`。
+
+```vue
+<RouterLink :to="{
+  query: {
+    dateRange: newDateRange
+  }
+}">
+```
+
+## 24. `template` 标签的另一个用途
+
+`template` 标签可以在模板中的任何地方使用，以更好地组织代码。
+
+我喜欢用它来简化`v-if`逻辑，有时也用`v-for`。
+
+在这个例子中，我们有几个元素都使用同一个`v-if`条件。
+
+```vue
+<template>
+  <div class="card">
+    <img src="imgPath" />
+    <h3>
+      {{ title }}
+    </h3>
+    <h4 v-if="expanded">
+      {{ subheading }}
+    </h4>
+    <div v-if="expanded" class="card-content">
+      <slot />
+    </div>
+    <SocialShare v-if="expanded" />
+  </div>
+</template>
+```
+
+这有点笨拙，而且一开始并不明显，一堆这样的元素被显示和隐藏在一起。在一个更大、更复杂的组件上，这可能是一个更糟糕的情况
+
+但我们能优化它。
+
+我们可以使用 `template` 标签来分组这些元素，并将 `v-if` 提升到模板 `template` 本身。
+
+```vue
+<template>
+  <div class="card">
+    <img src="imgPath" />
+    <h3>
+      {{ title }}
+    </h3>
+    <template v-if="expanded">
+      <h4>
+        {{ subheading }}
+      </h4>
+      <div class="card-content">
+        <slot />
+      </div>
+      <SocialShare />
+    </template>
+  </div>
+</template>
+```
+
+现在看起来就更容易理解，而且它在做什么，一目了然。
+
+## 25. 处理错误（和警告）的更好方法
+
+我们可以为Vue中的错误和警告提供一个自定义处理程序。
+
+```js
+// Vue 3
+const app = createApp(App);
+app.config.errorHandler = (err) => {
+  alert(err);
+};
+
+// Vue 2
+Vue.config.errorHandler = (err) => {
+  alert(err);
+};
+```
+
+像 Bugsnag 和 Rollbar 这样的错误跟踪服务，可以钩住这些处理程序来记录错误，但你也可以用它们来更优雅地处理错误，以获得更好的用户体验。
+
+例如，如果一个错误未被处理，应用程序不会直接崩溃，你可以显示一个完整的错误屏幕，让用户刷新或尝试其他东西。
+
+在 Vue3 中，错误处理程序只能处理 `template` 和 `watcher` 错误，但是 `Vue2`的错误处理程序可以捕获几乎所有错误。这两个版本中的警告处理程序只在开发阶段有效。
+
+
+
+
+
+
+

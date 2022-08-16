@@ -23,7 +23,7 @@ module.exports = {
         sidebar: require("./sidebar"),
         // 子侧边栏是否打开,在所有页面中启用自动生成子侧边栏，原 sidebar 仍然兼容
         subSidebar: 'auto',
-        sidebarDepth: 5,
+        sidebarDepth: 2,
         lastUpdated: '最后更新时间',
         search: true,
         searchMaxSuggestoins: 10,

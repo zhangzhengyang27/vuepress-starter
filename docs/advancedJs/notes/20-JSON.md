@@ -7,7 +7,6 @@ categories:
  - JS
 tags:
  - 高级
-publish: false
 ---
 
 
@@ -20,9 +19,13 @@ publish: false
 
 曾经有一段时间，XML 是互联网上传输结构化数据的事实标准。Web 服务的第一次浪潮很大程度上都是建立在 XML 之上的，突出的特点是服务器与服务器间通信。然而，业界一直不乏质疑 XML 的声音。不少人认为 XML 过于烦琐、冗长。为解决这个问题，也涌现了一些方案。不过，Web的发展方向已经改变了。
 
-2006 年，Douglas Crockford 把 JSON（JavaScript Object Notation，JavaScript 对象表示法）作为 IETF RFC 4627 提交给 IETF，而 JSON 的应用早在 2001 年就已经开始了。JSON 是 JavaScript 的一个严格的子集，利用了 JavaScript中的一些模式来表示结构化数据。Crockford认为与 XML 相比，JSON是在 JavaScript中读写结构化数据的更好的方式。因为可以把 JSON 直接传给 eval()，而且不必创建 DOM 对象。
+2006 年，Douglas Crockford 把 JSON（JavaScript Object Notation，JavaScript 对象表示法）作为 IETF RFC 4627 提交给 IETF，而 JSON 的应用早在 2001 年就已经开始了。
+
+JSON 是 JavaScript 的一个严格的子集，利用了 JavaScript中的一些模式来表示结构化数据。与 XML 相比，JSON是在 JavaScript中读写结构化数据的更好的方式。因为可以把 JSON 直接传给 eval()，而且不必创建 DOM 对象。
 
 关于 JSON，最重要的是要理解它是一种数据格式，不是一种编程语言。虽然具有相同的语法形式，但 JSON 并不从属于 JavaScript。而且，并不是只有 JavaScript 才使用 JSON，毕竟 JSON 只是一种数据格式。很多编程语言都有针对 JSON 的解析器和序列化器。
+
+
 
 ## 语法
 
@@ -34,11 +37,11 @@ JSON 的语法可以表示以下三种类型的值。
 
 JSON 不支持变量、函数或对象实例，它就是一种表示结构化数据的格式，虽然与 JavaScript 中表示数据的某些语法相同，但它并不局限于 JavaScript 的范畴。
 
+
+
 ### 简单值
 
 最简单的 JSON 数据形式就是简单值。例如，下面这个值是有效的 JSON 数据：5 
-
-这是 JSON 表示数值 5 的方式。类似地，下面是 JSON 表示字符串的方式："Hello world!" 
 
 JavaScript 字符串与 JSON 字符串的最大区别在于，JSON 字符串必须使用双引号（单引号会导致语法错误）。
 
@@ -73,7 +76,11 @@ JSON 表示上述对象的方式如下：
 } 
 ```
 
-与 JavaScript 的对象字面量相比，JSON 对象有两个地方不一样。首先，没有声明变量（JSON 中没有变量的概念）。其次，没有末尾的分号（因为这不是 JavaScript 语句，所以不需要分号）。再说一遍，对象的属性必须加双引号，这在 JSON 中是必需的。属性的值可以是简单值，也可以是复杂类型值，因此可以像下面这样在对象中嵌入对象：
+与 JavaScript 的对象字面量相比，JSON 对象有两个地方不一样。
+
+首先，没有声明变量（JSON 中没有变量的概念）。
+
+其次，没有末尾的分号（因为这不是 JavaScript 语句，所以不需要分号）。
 
 ```json
 { 
@@ -92,7 +99,9 @@ JSON 表示上述对象的方式如下：
 
 ### 数组
 
-JSON 中的第二种复杂数据类型是数组。JSON 数组采用的就是 JavaScript 中的数组字面量形式。例如，下面是 JavaScript 中的数组字面量：
+JSON 中的第二种复杂数据类型是数组。JSON 数组采用的就是 JavaScript 中的数组字面量形式。
+
+例如，下面是 JavaScript 中的数组字面量：
 
 ```js
 var values = [25, "hi", true]; 
@@ -125,6 +134,8 @@ var values = [25, "hi", true];
 
 这个数组中包含一些表示图书的对象。每个对象都有几个属性，其中一个属性是"authors"，这个属性的值又是一个数组。对象和数组通常是 JSON 数据结构的最外层形式（当然，这不是强制规定的），利用它们能够创造出各种各样的数据结构。
 
+
+
 ## 解析与序列化
 
 JSON 之所以流行，拥有与 JavaScript 类似的语法并不是全部原因。更重要的一个原因是，可以把JSON 数据结构解析为有用的 JavaScript 对象。与 XML 数据结构要解析成 DOM 文档而且从中提取数据极为麻烦相比，JSON 可以解析为 JavaScript 对象的优势极其明显。就以上一节中包含一组图书的 JSON数据结构为例，在解析为JavaScript 对象后，只需要下面一行简单的代码就可以取得第三本书的书名：
@@ -141,11 +152,15 @@ doc.getElementsByTagName("book")[2].getAttribute("title")
 
 看看这些多余的方法调用，就不难理解为什么 JSON 能得到 JavaScript 开发人员的热烈欢迎了。从此以后，JSON 就成了 Web 服务开发中交换数据的事实标准。
 
+
+
 ### JSON对象
 
-早期的 JSON 解析器基本上就是使用 JavaScript 的 eval()函数。由于 JSON 是 JavaScript 语法的子集，因此 eval()函数可以解析、解释并返回 JavaScript 对象和数组。ECMAScript 5 对解析 JSON 的行为进行规范，定义了全局对象 JSON。支持这个对象的浏览器有 IE 8+、Firefox 3.5+、Safari 4+、Chrome和 Opera 10.5+。对于较早版本的浏览器，可以使用一个 shim：https://github.com/douglascrockford/JSON-js。
+早期的 JSON 解析器基本上就是使用 JavaScript 的 eval()函数。由于 JSON 是 JavaScript 语法的子集，因此 eval()函数可以解析、解释并返回 JavaScript 对象和数组。
 
-在旧版本的浏览器中，使用 eval()对 JSON 数据结构求值存在风险，因为可能会执行一些恶意代码。对于不能原生支持 JSON 解析的浏览器，使用这个 shim 是最佳选择。
+ECMAScript 5 对解析 JSON 的行为进行规范，定义了全局对象 JSON。
+
+在旧版本的浏览器中，使用 eval()对 JSON 数据结构求值存在风险，因为可能会执行一些恶意代码。
 
 JSON 对象有两个方法：stringify()和 parse()。在最简单的情况下，这两个方法分别用于把JavaScript 对象序列化为 JSON 字符串和把 JSON 字符串解析为原生 JavaScript 值。例如：
 
@@ -170,7 +185,9 @@ var bookCopy = JSON.parse(jsonText);
 
 如果传给 JSON.parse()的字符串不是有效的 JSON，该方法会抛出错误。
 
-### 系列化选项
+
+
+### 系列化选项 JSON.stringify()
 
 实际上，JSON.stringify()除了要序列化的 JavaScript 对象外，还可以接收另外两个参数，这两个参数用于指定以不同的方式序列化 JavaScript 对象。
 
@@ -248,12 +265,18 @@ var book = {
 var jsonText = JSON.stringify(book, null, 4); 
 ```
 
-不知道读者注意到没有，JSON.stringify()也在结果字符串中插入了换行符以提高可读性。只要传入有效的控制缩进的参数值，结果字符串就会包含换行符。（只缩进而不换行意义不大。）最大缩进空格数为 10，所有大于 10 的值都会自动转换为 10。
+不知道读者注意到没有，JSON.stringify()也在结果字符串中插入了换行符以提高可读性。只要传入有效的控制缩进的参数值，结果字符串就会包含换行符。（只缩进而不换行意义不大。）
 
 如果缩进参数是一个字符串而非数值，则这个字符串将在 JSON 字符串中被用作缩进字符（不再使用空格）。在使用字符串的情况下，可以将缩进字符设置为制表符，或者两个短划线之类的任意字符。
 
 ```js
-var jsonText = JSON.stringify(book, null, **" - -"**); 
+var book = { 
+ "title": "Professional JavaScript", 
+ "authors": ["Nicholas C. Zakas"], 
+ 	edition: 3, 
+ 	year: 2011 
+}; 
+var jsonText = JSON.stringify(book, null, " - -"); 
 
 // 这样，jsonText 中的字符串将变成如下所示：
 
@@ -268,6 +291,8 @@ var jsonText = JSON.stringify(book, null, **" - -"**);
 ```
 
 缩进字符串最长不能超过 10 个字符长。如果字符串长度超过了 10 个，结果中将只出现前 10 个字符。
+
+
 
 #### toJSON()方法
 
@@ -288,12 +313,10 @@ var book = {
  } 
  }; 
 
-var jsonText = JSON.stringify(book); 
+var jsonText = JSON.stringify(book);  // "Professional JavaScript"
 ```
 
-以上代码在 book 对象上定义了一个 toJSON()方法，该方法返回图书的书名。与 Date 对象类似，这个对象也将被序列化为一个简单的字符串而非对象。可以让 toJSON()方法返回任何值，它都能正常工作。比如，可以让这个方法返回 undefined，此时如果包含它的对象嵌入在另一个对象中，会导致它的值变成 null，而如果它是顶级对象，结果就是 undefined。
-
-toJSON()可以作为函数过滤器的补充，因此理解序列化的内部顺序十分重要。假设把一个对象传入 JSON.stringify()，序列化该对象的顺序如下。
+toJSON() 可以作为函数过滤器的补充，因此理解序列化的内部顺序十分重要。假设把一个对象传入 JSON.stringify()，序列化该对象的顺序如下。
 
 1. 如果存在 toJSON()方法而且能通过它取得有效的值，则调用该方法。否则，返回对象本身。
 2. 如果提供了第二个参数，应用这个函数过滤器。传入函数过滤器的值是第(1)步返回的值。
@@ -302,9 +325,11 @@ toJSON()可以作为函数过滤器的补充，因此理解序列化的内部顺
 
 无论是考虑定义 toJSON()方法，还是考虑使用函数过滤器，亦或需要同时使用两者，理解这个顺序都是至关重要的。
 
-### 解析选项
 
-JSON.parse()方法也可以接收另一个参数，该参数是一个函数，将在每个键值对儿上调用。为了区别 JSON.stringify()接收的替换（过滤）函数（replacer），这个函数被称为还原函数（reviver），
+
+### 解析选项 JSON.parse()
+
+JSON.parse()方法也可以接收另一个参数，该参数是一个函数，将在每个键值对上调用。为了区别 JSON.stringify()接收的替换（过滤）函数（replacer），这个函数被称为还原函数（reviver），
 
 但实际上这两个函数的签名是相同的——它们都接收两个参数，一个键和一个值，而且都需要返回一个值。
 
@@ -336,10 +361,10 @@ alert(bookCopy.releaseDate.getFullYear());
 
 还原函数在遇到"releaseDate"键时，会基于相应的值创建一个新的 Date 对象。结果就是bookCopy.releaseDate 属性中会保存一个 Date 对象。正因为如此，才能基于这个对象调用getFullYear()方法。
 
+
+
 ## 小结
 
 JSON 是一个轻量级的数据格式，可以简化表示复杂数据结构的工作量。JSON 使用 JavaScript 语法的子集表示对象、数组、字符串、数值、布尔值和 null。即使 XML 也能表示同样复杂的数据结果，但JSON 没有那么烦琐，而且在 JavaScript 中使用更便利。
 
 ECMAScript 5 定义了一个原生的 JSON 对象，可以用来将对象序列化为 JSON 字符串或者将 JSON数据解析为 JavaScript 对象。JSON.stringify()和 JSON.parse()方法分别用来实现上述两项功能。
-
-这两个方法都有一些选项，通过它们可以改变过滤的方式，或者改变序列化的过程。原生的 JSON 对象也得到了很多浏览器的支持，比如 IE8+、Firefox 3.5+、Safari 4+、Opera 10.5 和Chrome。
