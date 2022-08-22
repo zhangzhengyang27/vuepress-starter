@@ -5,6 +5,7 @@ module.exports = [
         children: [
             '/muke100/notes/1-数据结构与算法之一',
             '/muke100/notes/1-数据结构与算法之二',
+            '/muke100/notes/1-数据结构与算法之三',
             '/muke100/notes/2-前端基础知识之一',
             '/muke100/notes/2-前端基础知识之二',
             '/muke100/notes/3-知识深度之一',

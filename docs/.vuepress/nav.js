@@ -6,7 +6,10 @@ module.exports = [
             {text: '慕课100', link: '/muke100/'},
             {text: 'vueRouter文档', link: '/vueRouter/'},
             {text: '技巧文档', link: '/skill/'},
-            {text: '拉勾前端', link: '/lagouWeb/'}
+            {text: '拉勾前端', link: '/lagouWeb/'},
+            {text: 'canvas', link: '/canvas/'},
+            {text: '极客数据结构', link: '/gbAlgorithm/'},
+            {text: 'vue2文档', link: '/vue2/'}
         ]
     },
     // {

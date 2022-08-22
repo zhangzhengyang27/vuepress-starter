@@ -5,6 +5,9 @@ module.exports = {
     '/vueRouter/': require('../vueRouter/sidebar'),
     '/skill/': require('../skill/sidebar'),
     '/lagouWeb/': require('../lagouWeb/sidebar'),
+    '/canvas/': require('../canvas/sidebar'),
+    '/gbAlgorithm/': require('../gbAlgorithm/sidebar'),
+    '/vue2/': require('../vue2/sidebar'),
 
 
     // '/baodian/zero': require('../baodian/zero/sidebar'),
